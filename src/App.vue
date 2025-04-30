@@ -1,8 +1,9 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const tasks = ref([])
 const newTask = ref('')
+const filtered = ref("all")
 
 const addTask = () => {
   tasks.value.push({
@@ -18,6 +19,16 @@ const toggleTask = (task) => {
   console.log(task.completed)
 }
 
+const filteredTasks = computed(() => {
+  if (filtered.value === 'completed') {
+    return tasks.value.filter(t => t.completed)
+  }
+  if (filtered.value === 'incomplete') {
+    return tasks.value.filter(t => !t.completed)
+  }
+  return tasks.value
+})
+
 </script>
 
 <template>
@@ -26,9 +37,15 @@ const toggleTask = (task) => {
     <button @click="addTask">Add Task</button>
   </div>
 
+  <select v-model="filtered">
+    <option value="all">All</option>
+    <option value="completed">Complete</option>
+    <option value="incomplete">incomplete</option>
+  </select>
+
   <div>
     <ul>
-      <li v-for="task in tasks" :key="task.id">
+      <li v-for="task in filteredTasks" :key="task.id">
         <input type="checkbox" v-model="task.completed" @change="toggleTask(task)" />
         {{ task.title }}
       </li>
